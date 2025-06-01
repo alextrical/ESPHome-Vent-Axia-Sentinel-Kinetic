@@ -1,7 +1,7 @@
 ## vent_axia_sentinel_kinetic
 ```
 external_components:
-  - source: github://alextrical/vent_axia_sentinel_kinetic@latest
+  - source: github://alextrical/ESPHome-Vent-Axia-Sentinel-Kinetic@latest
     components: [ vent_axia_sentinel_kinetic ]
     refresh: always
 ```

@@ -120,9 +120,6 @@ namespace esphome {
     }
 
     void VentAxiaSentinelKineticComponent::process_packet_() {
-      // for (uint8_t i = 0; i < 41; i++) {
-      //   ESP_LOGVV(TAG, "  %u: (0x%02X)", i + 1, buffer[i]);
-      // }
       std::string buff(reinterpret_cast <
         const char * > (buffer + 5), 34);
 
