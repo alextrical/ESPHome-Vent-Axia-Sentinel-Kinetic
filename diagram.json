@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "author": "Ben Jackson",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "board-esp32-devkit-c-v4", "id": "esp", "top": 0, "left": 0, "attrs": {} },
+    { "type": "chip-uart", "id": "chip2", "top": 116.22, "left": 139.2, "attrs": {} },
+    { "type": "wokwi-logic-analyzer", "id": "logic1", "top": -57.25, "left": 144, "attrs": {} },
+    { "type": "wokwi-slide-switch", "id": "sw1", "top": 62, "left": 118.3, "attrs": {} }
+  ],
+  "connections": [
+    [ "esp:TX", "$serialMonitor:RX", "", [] ],
+    [ "esp:RX", "$serialMonitor:TX", "", [] ],
+    [ "esp:17", "chip2:RX", "violet", [ "h0" ] ],
+    [ "chip2:TX", "esp:16", "blue", [ "h0" ] ],
+    [ "logic1:GND", "esp:GND.2", "black", [ "h-28.8", "v-57.6" ] ],
+    [ "logic1:GND", "sw1:2", "black", [ "v67.2", "h-9.7" ] ],
+    [ "sw1:1", "esp:19", "green", [ "v0" ] ],
+    [ "sw1:2", "sw1:3", "black", [ "v0" ] ],
+    [ "logic1:D0", "esp:17", "violet", [ "h-28.8", "v163.2" ] ]
+  ],
+  "dependencies": { "chip-uart": "github:alextrical/wokwi-VentAxiaSentinel-custom-chip@0.1.6" }
+}

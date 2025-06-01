@@ -1,0 +1,2 @@
+esphome==2025.5.0
+setuptools
