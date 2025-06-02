@@ -129,6 +129,12 @@ namespace esphome {
         uint8_t current_index_ = 0;
         uint8_t cmdbuffer_[8];
         uint8_t LAST_CMD_KEY_DATA_ = 0x00;
+
+        //ESP32
+        static VentAxiaSentinelKineticComponent* instance;
+        void IRAM_ATTR timer_isr();
+        static void IRAM_ATTR timer_isr_wrapper();
+        hw_timer_t *timer = nullptr;
     };
 
   } // namespace vent_axia_sentinel_kinetic

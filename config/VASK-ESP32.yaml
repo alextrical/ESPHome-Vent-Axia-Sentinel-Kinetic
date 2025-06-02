@@ -38,6 +38,22 @@ uart:
   baud_rate: 9600
   id: vask_uart
 
+binary_sensor:
+  - platform: gpio
+    pin:
+      number: 0
+      mode:
+        input: true
+        pullup: true
+      inverted: true
+    name: "Up"
+    on_press:
+      then:
+        - switch.turn_on: sw_up
+    on_release:
+      then:
+        - switch.turn_off: sw_up
+
 switch:
   - platform: vent_axia_sentinel_kinetic
     up:

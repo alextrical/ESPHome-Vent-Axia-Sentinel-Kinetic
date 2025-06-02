@@ -11,8 +11,30 @@ namespace esphome {
     static
     const char * TAG = "vent_axia_sentinel_kinetic.component";
 
+    //ESP32
+    VentAxiaSentinelKineticComponent* VentAxiaSentinelKineticComponent::instance = nullptr;
+
+    void IRAM_ATTR VentAxiaSentinelKineticComponent::timer_isr_wrapper() {
+      if (VentAxiaSentinelKineticComponent::instance) {
+        VentAxiaSentinelKineticComponent::instance->timer_isr();
+      }
+    }
+
+    void IRAM_ATTR VentAxiaSentinelKineticComponent::timer_isr() {
+      // Your ISR logic here
+        send_command_();
+    }
+    //ESP32^^
+
     void VentAxiaSentinelKineticComponent::setup() {
       ESP_LOGCONFIG(TAG, "Setting up VentAxiaSentinelKinetic...");
+      //ESP32
+      instance = this;
+      timer = timerBegin(1, 80, true);
+      timerAttachInterrupt(timer, &timer_isr_wrapper, true);
+      timerAlarmWrite(timer, 26000, true);  // 1 second interval
+      // timerAlarmEnable(timer);
+      //ESP32^^
       this -> send_alive_str_();
       ESP_LOGCONFIG(TAG, "VentAxiaSentinelKinetic setup complete.");
     }
@@ -24,11 +46,16 @@ namespace esphome {
           this -> calculate_command_(CMD_KEY_HEADER, CMD_KEY_DATA);
           LAST_CMD_KEY_DATA_ = CMD_KEY_DATA;
         }
-        // //Send serial packets
-        int32_t now = millis();
-        if (now - last_periodic_millis_ >= 20) { //we need every 26ms, but setting less can allow for more jitter
-          last_periodic_millis_ = now;
-          send_command_();
+        timerAlarmEnable(timer);
+        // // //Send serial packets
+        // int32_t now = millis();
+        // if (now - last_periodic_millis_ >= 20) { //we need every 26ms, but setting less can allow for more jitter
+        //   last_periodic_millis_ = now;
+        //   send_command_();
+        // }
+      } else {
+        if (CMD_KEY_DATA != LAST_CMD_KEY_DATA_) {
+          timerAlarmDisable(timer);
         }
       }
 

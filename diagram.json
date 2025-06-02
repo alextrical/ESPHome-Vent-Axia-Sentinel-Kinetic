@@ -15,9 +15,9 @@
     [ "chip2:TX", "esp:16", "blue", [ "h0" ] ],
     [ "logic1:GND", "esp:GND.2", "black", [ "h-28.8", "v-57.6" ] ],
     [ "logic1:GND", "sw1:2", "black", [ "v67.2", "h-9.7" ] ],
-    [ "sw1:1", "esp:19", "green", [ "v0" ] ],
     [ "sw1:2", "sw1:3", "black", [ "v0" ] ],
-    [ "logic1:D0", "esp:17", "violet", [ "h-28.8", "v163.2" ] ]
+    [ "logic1:D0", "esp:17", "violet", [ "h-28.8", "v163.2" ] ],
+    [ "sw1:1", "esp:0", "green", [ "v0" ] ]
   ],
   "dependencies": { "chip-uart": "github:alextrical/wokwi-VentAxiaSentinel-custom-chip@0.1.6" }
 }
