@@ -197,10 +197,6 @@ void OpenthermHub::loop() {
   auto cur_time = millis();
   auto const cur_mode = this->opentherm_->get_mode();
 
-  if (this->handle_error_(cur_mode)) {
-    return;
-  }
-
   switch (cur_mode) {
     case OperationMode::WRITE:
     case OperationMode::READ:
@@ -223,21 +219,6 @@ void OpenthermHub::loop() {
   this->last_mode_ = cur_mode;
 }
 
-bool OpenthermHub::handle_error_(OperationMode mode) {
-  switch (mode) {
-    case OperationMode::ERROR_TIMEOUT:
-      // Timeout error might happen while we wait for device to respond.
-      this->handle_timeout_error_();
-      return true;
-    case OperationMode::ERROR_TIMER:
-      // Timer error can happen only on ESP32.
-      this->handle_timer_error_();
-      return true;
-    default:
-      return false;
-  }
-}
-
 void OpenthermHub::sync_loop_() {
   if (!this->opentherm_->is_idle()) {
     ESP_LOGE(TAG, "OpenTherm is not idle at the start of the loop");
@@ -252,12 +233,6 @@ void OpenthermHub::sync_loop_() {
     return;
   }
 
-  this->start_conversation_();
-  // There may be a timer error at this point
-  if (this->handle_error_(this->opentherm_->get_mode())) {
-    return;
-  }
-
   // Spin while message is being sent to device
   if (!this->spin_wait_(1150, [&] { return this->opentherm_->is_active(); })) {
     ESP_LOGE(TAG, "Hub timeout triggered during send");
@@ -265,35 +240,9 @@ void OpenthermHub::sync_loop_() {
     return;
   }
 
-  // Check for errors and ensure we are in the right state (message sent successfully)
-  if (this->handle_error_(this->opentherm_->get_mode())) {
-    return;
-  } else if (!this->opentherm_->is_sent()) {
-    ESP_LOGW(TAG, "Unexpected state after sending request: %s",
-             this->opentherm_->operation_mode_to_str(this->opentherm_->get_mode()));
-    this->stop_opentherm_();
-    return;
-  }
-
-  // Listen for the response
-  // There may be a timer error at this point
-  if (this->handle_error_(this->opentherm_->get_mode())) {
-    return;
-  }
-
   // Spin while response is being received
   if (!this->spin_wait_(1150, [&] { return this->opentherm_->is_active(); })) {
     ESP_LOGE(TAG, "Hub timeout triggered during receive");
-    this->stop_opentherm_();
-    return;
-  }
-
-  // Check for errors and ensure we are in the right state (message received successfully)
-  if (this->handle_error_(this->opentherm_->get_mode())) {
-    return;
-  } else if (!this->opentherm_->has_message()) {
-    ESP_LOGW(TAG, "Unexpected state after receiving response: %s",
-             this->opentherm_->operation_mode_to_str(this->opentherm_->get_mode()));
     this->stop_opentherm_();
     return;
   }
@@ -354,18 +303,6 @@ void OpenthermHub::read_response_() {
 void OpenthermHub::stop_opentherm_() {
   this->opentherm_->stop();
   this->last_conversation_end_ = millis();
-}
-
-void OpenthermHub::handle_timeout_error_() {
-  ESP_LOGW(TAG, "Timeout while waiting for response from device");
-  this->stop_opentherm_();
-}
-
-void OpenthermHub::handle_timer_error_() {
-  this->opentherm_->report_and_reset_timer_error();
-  this->stop_opentherm_();
-  // Timer error is critical, there is no point in retrying.
-  this->mark_failed();
 }
 
 void OpenthermHub::dump_config() {
