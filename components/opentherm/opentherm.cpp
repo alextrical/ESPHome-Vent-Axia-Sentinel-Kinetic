@@ -105,7 +105,7 @@ bool IRAM_ATTR OpenTherm::timer_isr(OpenTherm *arg) {
   }
   if (arg->clock_ == 0) {
     if (arg->bit_pos_ <= 0) {            // check termination
-      arg->mode_ = OperationMode::SENT;  // all data written
+      // arg->mode_ = OperationMode::SENT;  // all data written
       arg->stop_timer_();
     }
     arg->bit_pos_--;
@@ -120,11 +120,6 @@ bool IRAM_ATTR OpenTherm::timer_isr(OpenTherm *arg) {
 #ifdef ESP8266
 void IRAM_ATTR OpenTherm::esp8266_timer_isr() { OpenTherm::timer_isr(OpenTherm::instance); }
 #endif
-
-void IRAM_ATTR OpenTherm::bit_read_(uint8_t value) {
-  this->data_ = (this->data_ << 1) | value;
-  this->bit_pos_++;
-}
 
 ProtocolErrorType IRAM_ATTR OpenTherm::verify_stop_bit_(uint8_t value) {
   if (value) {  // stop bit detected
