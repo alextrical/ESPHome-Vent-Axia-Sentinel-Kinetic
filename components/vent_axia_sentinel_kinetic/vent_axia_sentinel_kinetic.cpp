@@ -1,5 +1,4 @@
 #include "esphome/core/log.h"
-
 #include "vent_axia_sentinel_kinetic.h"
 
 #define highbyte(val)(uint8_t)((val) >> 8)
@@ -11,7 +10,6 @@ namespace esphome {
     static
     const char * TAG = "vent_axia_sentinel_kinetic.component";
 
-    //ESP32
     VentAxiaSentinelKineticComponent* VentAxiaSentinelKineticComponent::instance = nullptr;
 
     void IRAM_ATTR VentAxiaSentinelKineticComponent::timer_isr_wrapper() {
@@ -24,17 +22,28 @@ namespace esphome {
       // Your ISR logic here
         send_command_();
     }
-    //ESP32^^
 
     void VentAxiaSentinelKineticComponent::setup() {
       ESP_LOGCONFIG(TAG, "Setting up VentAxiaSentinelKinetic...");
       //ESP32
       instance = this;
+    #ifdef USE_ESP32
+      // Fix timer divider (80 MHz base clock / 80 = 1 MHz)
       timer = timerBegin(1, 80, true);
       timerAttachInterrupt(timer, &timer_isr_wrapper, true);
       timerAlarmWrite(timer, 26000, true);  // 1 second interval
       // timerAlarmEnable(timer);
-      //ESP32^^
+    #endif
+    #ifdef USE_ESP8266
+      // Timer configuration
+      timer1_disable();
+      timer1_attachInterrupt(timer_isr_wrapper);
+      timer1_enable(TIM_DIV16, TIM_EDGE, TIM_LOOP);
+      timer1_disable();
+      
+      // 5,000,000 ticks @ 5MHz (TIM_DIV16) = 1 second interval
+      timer1_write(5*26000);
+    #endif
       this -> send_alive_str_();
       ESP_LOGCONFIG(TAG, "VentAxiaSentinelKinetic setup complete.");
     }
@@ -46,7 +55,12 @@ namespace esphome {
           this -> calculate_command_(CMD_KEY_HEADER, CMD_KEY_DATA);
           LAST_CMD_KEY_DATA_ = CMD_KEY_DATA;
         }
+      #ifdef USE_ESP32
         timerAlarmEnable(timer);
+      #endif
+      #ifdef USE_ESP8266
+        timer1_enable(TIM_DIV16, TIM_EDGE, TIM_LOOP);
+      #endif
         // // //Send serial packets
         // int32_t now = millis();
         // if (now - last_periodic_millis_ >= 20) { //we need every 26ms, but setting less can allow for more jitter
@@ -55,7 +69,12 @@ namespace esphome {
         // }
       } else {
         if (CMD_KEY_DATA != LAST_CMD_KEY_DATA_) {
+        #ifdef USE_ESP32
           timerAlarmDisable(timer);
+        #endif
+        #ifdef USE_ESP8266
+          timer1_disable();
+        #endif
         }
       }
 
