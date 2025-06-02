@@ -33,7 +33,6 @@ enum OperationMode {
   IDLE = 0,  // no operation
 
   READ = 2,      // reading 32-bit data frame
-  RECEIVED = 3,  // data frame received with valid start and stop bit
 
   WRITE = 4,  // writing data to output
   SENT = 5,   // all data written to output
@@ -238,13 +237,6 @@ class OpenTherm {
    * Setup pins.
    */
   bool initialize();
-
-  /**
-   * Use this function to check whether listen() function already captured a valid data packet.
-   *
-   * @return true if data packet has been captured from line by listen() function.
-   */
-  bool has_message() { return mode_ == OperationMode::RECEIVED; }
 
   /**
    * Immediately send out Opentherm data packet to line connected on given pin.

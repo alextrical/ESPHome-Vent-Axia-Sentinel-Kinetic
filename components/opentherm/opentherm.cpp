@@ -322,7 +322,6 @@ const char *OpenTherm::operation_mode_to_str(OperationMode mode) {
   switch (mode) {
     TO_STRING_MEMBER(IDLE)
     TO_STRING_MEMBER(READ)
-    TO_STRING_MEMBER(RECEIVED)
     TO_STRING_MEMBER(WRITE)
     TO_STRING_MEMBER(SENT)
     TO_STRING_MEMBER(ERROR_PROTOCOL)

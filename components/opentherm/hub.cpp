@@ -129,21 +129,6 @@ OpenthermData OpenthermHub::build_request_(MessageId request_id) const {
 
 OpenthermHub::OpenthermHub() : Component(), in_pin_{}, out_pin_{} {}
 
-void OpenthermHub::process_response(OpenthermData &data) {
-  ESP_LOGD(TAG, "Received OpenTherm response with id %d (%s)", data.id,
-           this->opentherm_->message_id_to_str((MessageId) data.id));
-  this->opentherm_->debug_data(data);
-
-  switch (data.id) {
-    OPENTHERM_SENSOR_MESSAGE_HANDLERS(OPENTHERM_MESSAGE_RESPONSE_MESSAGE, OPENTHERM_MESSAGE_RESPONSE_ENTITY, ,
-                                      OPENTHERM_MESSAGE_RESPONSE_POSTSCRIPT, )
-  }
-  switch (data.id) {
-    OPENTHERM_BINARY_SENSOR_MESSAGE_HANDLERS(OPENTHERM_MESSAGE_RESPONSE_MESSAGE, OPENTHERM_MESSAGE_RESPONSE_ENTITY, ,
-                                             OPENTHERM_MESSAGE_RESPONSE_POSTSCRIPT, )
-  }
-}
-
 void OpenthermHub::setup() {
   ESP_LOGD(TAG, "Setting up OpenTherm component");
   this->opentherm_ = make_unique<OpenTherm>(this->in_pin_, this->out_pin_);
@@ -210,9 +195,6 @@ void OpenthermHub::loop() {
     case OperationMode::SENT:
       // Message sent, now listen for the response.
       break;
-    case OperationMode::RECEIVED:
-      this->read_response_();
-      break;
     default:
       break;
   }
@@ -239,15 +221,6 @@ void OpenthermHub::sync_loop_() {
     this->stop_opentherm_();
     return;
   }
-
-  // Spin while response is being received
-  if (!this->spin_wait_(1150, [&] { return this->opentherm_->is_active(); })) {
-    ESP_LOGE(TAG, "Hub timeout triggered during receive");
-    this->stop_opentherm_();
-    return;
-  }
-
-  this->read_response_();
 }
 
 void OpenthermHub::check_timings_(uint32_t cur_time) {
@@ -287,17 +260,6 @@ void OpenthermHub::start_conversation_() {
   // Send the request
   this->last_conversation_start_ = millis();
   this->opentherm_->send(request);
-}
-
-void OpenthermHub::read_response_() {
-  OpenthermData response;
-
-  this->stop_opentherm_();
-
-  this->before_process_response_callback_.call(response);
-  this->process_response(response);
-
-  this->message_iterator_++;
 }
 
 void OpenthermHub::stop_opentherm_() {
