@@ -74,9 +74,6 @@ namespace opentherm {
 // requests since no data needs to be sent or processed, just the data id.
 
 // In order for things not to break, we define empty lists here in case some platforms are not used in config.
-#ifndef OPENTHERM_SENSOR_MESSAGE_HANDLERS
-#define OPENTHERM_SENSOR_MESSAGE_HANDLERS(MESSAGE, ENTITY, entity_sep, postscript, msg_sep)
-#endif
 #ifndef OPENTHERM_BINARY_SENSOR_MESSAGE_HANDLERS
 #define OPENTHERM_BINARY_SENSOR_MESSAGE_HANDLERS(MESSAGE, ENTITY, entity_sep, postscript, msg_sep)
 #endif
@@ -85,9 +82,6 @@ namespace opentherm {
 #endif
 #ifndef OPENTHERM_OUTPUT_MESSAGE_HANDLERS
 #define OPENTHERM_OUTPUT_MESSAGE_HANDLERS(MESSAGE, ENTITY, entity_sep, postscript, msg_sep)
-#endif
-#ifndef OPENTHERM_INPUT_SENSOR_MESSAGE_HANDLERS
-#define OPENTHERM_INPUT_SENSOR_MESSAGE_HANDLERS(MESSAGE, ENTITY, entity_sep, postscript, msg_sep)
 #endif
 #ifndef OPENTHERM_SETTING_MESSAGE_HANDLERS
 #define OPENTHERM_SETTING_MESSAGE_HANDLERS(MESSAGE, ENTITY, entity_sep, postscript, msg_sep)
