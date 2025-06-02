@@ -106,14 +106,7 @@ namespace opentherm {
   return data; \
   }
 
-// Read data request builder
-#define OPENTHERM_MESSAGE_READ_MESSAGE(msg) \
-  case MessageId::msg: \
-    data.id = request_id; \
-    return data;
-
 // Data processing builders
-#define OPENTHERM_MESSAGE_RESPONSE_MESSAGE(msg) case MessageId::msg:
 #define OPENTHERM_MESSAGE_RESPONSE_ENTITY(key, msg_data) this->key->publish_state(message_data::parse_##msg_data(data));
 #define OPENTHERM_MESSAGE_RESPONSE_POSTSCRIPT break;
 
