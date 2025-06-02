@@ -204,8 +204,6 @@ void OpenthermHub::loop() {
   switch (cur_mode) {
     case OperationMode::WRITE:
     case OperationMode::READ:
-    case OperationMode::LISTEN:
-      break;
     case OperationMode::IDLE:
       this->check_timings_(cur_time);
       if (this->should_skip_loop_(cur_time)) {
@@ -215,7 +213,6 @@ void OpenthermHub::loop() {
       break;
     case OperationMode::SENT:
       // Message sent, now listen for the response.
-      this->opentherm_->listen();
       break;
     case OperationMode::RECEIVED:
       this->read_response_();
@@ -283,7 +280,6 @@ void OpenthermHub::sync_loop_() {
   }
 
   // Listen for the response
-  this->opentherm_->listen();
   // There may be a timer error at this point
   if (this->handle_error_(this->opentherm_->get_mode())) {
     return;

@@ -32,7 +32,6 @@ template<class T> constexpr T write_bit(T value, uint8_t bit, uint8_t bit_value)
 enum OperationMode {
   IDLE = 0,  // no operation
 
-  LISTEN = 1,    // waiting for transmission to start
   READ = 2,      // reading 32-bit data frame
   RECEIVED = 3,  // data frame received with valid start and stop bit
 
@@ -241,15 +240,6 @@ class OpenTherm {
   bool initialize();
 
   /**
-   * Start listening for Opentherm data packet comming from line connected to given pin.
-   * If data packet is received then has_message() function returns true and data packet can be retrieved by calling
-   * get_message() function. If timeout > 0 then this function waits for incomming data package for timeout millis and
-   * if no data packet is recevived, error state is indicated by is_error() function. If either data packet is received
-   * or timeout is reached listening is stopped.
-   */
-  void listen();
-
-  /**
    * Use this function to check whether listen() function already captured a valid data packet.
    *
    * @return true if data packet has been captured from line by listen() function.
@@ -330,7 +320,7 @@ class OpenTherm {
    */
   bool is_timer_error() { return mode_ == OperationMode::ERROR_TIMER; }
 
-  bool is_active() { return mode_ == LISTEN || mode_ == READ || mode_ == WRITE; }
+  bool is_active() { return mode_ == READ || mode_ == WRITE; }
 
   OperationMode get_mode() { return mode_; }
 

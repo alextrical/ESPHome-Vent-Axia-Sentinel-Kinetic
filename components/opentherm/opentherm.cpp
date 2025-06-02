@@ -64,17 +64,6 @@ bool OpenTherm::initialize() {
 #endif
 }
 
-void OpenTherm::listen() {
-  this->stop_timer_();
-  this->timeout_counter_ = this->device_timeout_ * 5;  // timer_ ticks at 5 ticks/ms
-
-  this->mode_ = OperationMode::LISTEN;
-  this->data_ = 0;
-  this->bit_pos_ = 0;
-
-  this->start_read_timer_();
-}
-
 void OpenTherm::send(OpenthermData &data) {
   this->stop_timer_();
   this->data_ = data.type;
@@ -133,81 +122,21 @@ void IRAM_ATTR OpenTherm::read_() {
 }
 
 bool IRAM_ATTR OpenTherm::timer_isr(OpenTherm *arg) {
-  if (arg->mode_ == OperationMode::LISTEN) {
-    if (arg->timeout_counter_ == 0) {
-      arg->mode_ = OperationMode::ERROR_TIMEOUT;
+  // write data to pin
+  if (arg->bit_pos_ == 33 || arg->bit_pos_ == 0) {  // start bit
+    arg->write_bit_(1, arg->clock_);
+  } else {  // data bits
+    arg->write_bit_(read_bit(arg->data_, arg->bit_pos_ - 1), arg->clock_);
+  }
+  if (arg->clock_ == 0) {
+    if (arg->bit_pos_ <= 0) {            // check termination
+      arg->mode_ = OperationMode::SENT;  // all data written
       arg->stop_timer_();
-      return false;
     }
-    bool const value = arg->isr_in_pin_.digital_read();
-    if (value) {  // incoming data (rising signal)
-      arg->read_();
-    }
-    if (arg->timeout_counter_ > 0) {
-      arg->timeout_counter_--;
-    }
-  } else if (arg->mode_ == OperationMode::READ) {
-    bool const value = arg->isr_in_pin_.digital_read();
-    uint8_t const last = (arg->capture_ & 1);
-    if (value != last) {
-      // transition of signal from last sampling
-      if (arg->clock_ == 1 && arg->capture_ > 0xF) {
-        // no transition in the middle of the bit
-        arg->mode_ = OperationMode::ERROR_PROTOCOL;
-        arg->error_type_ = ProtocolErrorType::NO_TRANSITION;
-        arg->stop_timer_();
-        return false;
-      } else if (arg->clock_ == 1 || arg->capture_ > 0xF) {
-        // transition in the middle of the bit OR no transition between two bit, both are valid data points
-        if (arg->bit_pos_ == BitPositions::STOP_BIT) {
-          // expecting stop bit
-          auto stop_bit_error = arg->verify_stop_bit_(last);
-          if (stop_bit_error == ProtocolErrorType::NO_ERROR) {
-            arg->mode_ = OperationMode::RECEIVED;
-            arg->stop_timer_();
-            return false;
-          } else {
-            // end of data not verified, invalid data
-            arg->mode_ = OperationMode::ERROR_PROTOCOL;
-            arg->error_type_ = stop_bit_error;
-            arg->stop_timer_();
-            return false;
-          }
-        } else {
-          // normal data point at clock high
-          arg->bit_read_(last);
-          arg->clock_ = 0;
-        }
-      } else {
-        // clock low, not a data point, switch clock
-        arg->clock_ = 1;
-      }
-      arg->capture_ = 1;  // reset counter
-    } else if (arg->capture_ > 0xFF) {
-      // no change for too long, invalid manchester encoding
-      arg->mode_ = OperationMode::ERROR_PROTOCOL;
-      arg->error_type_ = ProtocolErrorType::NO_CHANGE_TOO_LONG;
-      arg->stop_timer_();
-      return false;
-    }
-    arg->capture_ = (arg->capture_ << 1) | value;
-  } else if (arg->mode_ == OperationMode::WRITE) {
-    // write data to pin
-    if (arg->bit_pos_ == 33 || arg->bit_pos_ == 0) {  // start bit
-      arg->write_bit_(1, arg->clock_);
-    } else {  // data bits
-      arg->write_bit_(read_bit(arg->data_, arg->bit_pos_ - 1), arg->clock_);
-    }
-    if (arg->clock_ == 0) {
-      if (arg->bit_pos_ <= 0) {            // check termination
-        arg->mode_ = OperationMode::SENT;  // all data written
-        arg->stop_timer_();
-      }
-      arg->bit_pos_--;
-      arg->clock_ = 1;
-    } else {
-      arg->clock_ = 0;
-    }
+    arg->bit_pos_--;
+    arg->clock_ = 1;
+  } else {
+    arg->clock_ = 0;
   }
 
   return false;
@@ -417,7 +346,6 @@ bool IRAM_ATTR OpenTherm::check_parity_(uint32_t val) {
 const char *OpenTherm::operation_mode_to_str(OperationMode mode) {
   switch (mode) {
     TO_STRING_MEMBER(IDLE)
-    TO_STRING_MEMBER(LISTEN)
     TO_STRING_MEMBER(READ)
     TO_STRING_MEMBER(RECEIVED)
     TO_STRING_MEMBER(WRITE)
