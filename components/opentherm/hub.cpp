@@ -81,7 +81,6 @@ OpenthermData OpenthermHub::build_request_(MessageId request_id) const {
     bool const dhw_blocked = this->dhw_block && OPENTHERM_READ_dhw_block;
     // NOLINTEND
 
-    data.type = MessageType::READ_DATA;
     data.valueHB = ch_enabled | (dhw_enabled << 1) | (cooling_enabled << 2) | (otc_enabled << 3) | (ch2_enabled << 4) |
                    (summer_mode_is_active << 5) | (dhw_blocked << 6);
 

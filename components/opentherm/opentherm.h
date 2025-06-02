@@ -58,16 +58,6 @@ enum TimerErrorType {
   SET_COUNTER_VALUE_ERROR = 4,  // No level change for too much timer ticks
 };
 
-enum MessageType {
-  READ_DATA = 0,
-  READ_ACK = 4,
-  WRITE_DATA = 1,
-  WRITE_ACK = 5,
-  INVALID_DATA = 2,
-  DATA_INVALID = 6,
-  UNKNOWN_DATAID = 7
-};
-
 enum MessageId {
   STATUS = 0,
   CH_SETPOINT = 1,
@@ -313,7 +303,6 @@ class OpenTherm {
 
   const char *protocol_error_to_str(ProtocolErrorType error_type);
   const char *timer_error_to_str(TimerErrorType error_type);
-  const char *message_type_to_str(MessageType message_type);
   const char *operation_mode_to_str(OperationMode mode);
   const char *message_id_to_str(MessageId id);
 

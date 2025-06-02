@@ -99,7 +99,6 @@ namespace opentherm {
 // Write data request builders
 #define OPENTHERM_MESSAGE_WRITE_MESSAGE(msg) \
   case MessageId::msg: { \
-    data.type = MessageType::WRITE_DATA; \
     data.id = request_id;
 #define OPENTHERM_MESSAGE_WRITE_ENTITY(key, msg_data) message_data::write_##msg_data(this->key->state, data);
 #define OPENTHERM_MESSAGE_WRITE_SETTING(key, msg_data) message_data::write_##msg_data(this->key, data);
@@ -110,7 +109,6 @@ namespace opentherm {
 // Read data request builder
 #define OPENTHERM_MESSAGE_READ_MESSAGE(msg) \
   case MessageId::msg: \
-    data.type = MessageType::READ_DATA; \
     data.id = request_id; \
     return data;
 

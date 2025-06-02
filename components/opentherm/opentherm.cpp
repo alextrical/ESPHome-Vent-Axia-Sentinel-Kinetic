@@ -353,19 +353,6 @@ const char *OpenTherm::timer_error_to_str(TimerErrorType error_type) {
       return "<INVALID>";
   }
 }
-const char *OpenTherm::message_type_to_str(MessageType message_type) {
-  switch (message_type) {
-    TO_STRING_MEMBER(READ_DATA)
-    TO_STRING_MEMBER(READ_ACK)
-    TO_STRING_MEMBER(WRITE_DATA)
-    TO_STRING_MEMBER(WRITE_ACK)
-    TO_STRING_MEMBER(INVALID_DATA)
-    TO_STRING_MEMBER(DATA_INVALID)
-    TO_STRING_MEMBER(UNKNOWN_DATAID)
-    default:
-      return "<INVALID>";
-  }
-}
 
 const char *OpenTherm::message_id_to_str(MessageId id) {
   switch (id) {
@@ -470,10 +457,6 @@ const char *OpenTherm::message_id_to_str(MessageId id) {
 void OpenTherm::debug_data(OpenthermData &data) {
   ESP_LOGD(TAG, "%s %s %s %s", format_bin(data.type).c_str(), format_bin(data.id).c_str(),
            format_bin(data.valueHB).c_str(), format_bin(data.valueLB).c_str());
-  ESP_LOGD(TAG, "type: %s; id: %s; HB: %s; LB: %s; uint_16: %s; float: %s",
-           this->message_type_to_str((MessageType) data.type), to_string(data.id).c_str(),
-           to_string(data.valueHB).c_str(), to_string(data.valueLB).c_str(), to_string(data.u16()).c_str(),
-           to_string(data.f88()).c_str());
 }
 void OpenTherm::debug_error(OpenThermError &error) const {
   ESP_LOGD(TAG, "data: %s; clock: %s; capture: %s; bit_pos: %s", format_hex(error.data).c_str(),
