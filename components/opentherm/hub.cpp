@@ -117,30 +117,31 @@ void OpenthermHub::write_repeating_messages_(std::vector<MessageId> &target) {  
 }
 
 void OpenthermHub::loop() {
-  if (this->sync_mode_) {
-    this->sync_loop_();
-    return;
-  }
+  // if (this->sync_mode_) {
+  //   this->sync_loop_();
+  //   return;
+  // }
 
-  auto cur_time = millis();
-  auto const cur_mode = this->opentherm_->get_mode();
+  // auto cur_time = millis();
+  // auto const cur_mode = this->opentherm_->get_mode();
 
-  switch (cur_mode) {
-    case OperationMode::WRITE:
-    case OperationMode::IDLE:
-      this->check_timings_(cur_time);
-      if (this->should_skip_loop_(cur_time)) {
-        break;
-      }
+  // switch (cur_mode) {
+  //   case OperationMode::WRITE:
+  //   case OperationMode::IDLE:
+  //     // this->check_timings_(cur_time);
+  //     // if (this->should_skip_loop_(cur_time)) {
+  //     //   break;
+  //     // }
+  //     this->start_conversation_();
+  //     break;
+  //   case OperationMode::SENT:
+  //     // Message sent, now listen for the response.
+  //     break;
+  //   default:
+  //     break;
+  // }
+  // this->last_mode_ = cur_mode;
       this->start_conversation_();
-      break;
-    case OperationMode::SENT:
-      // Message sent, now listen for the response.
-      break;
-    default:
-      break;
-  }
-  this->last_mode_ = cur_mode;
 }
 
 void OpenthermHub::sync_loop_() {
