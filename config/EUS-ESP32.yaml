@@ -1,0 +1,24 @@
+esp32:
+  board: esp32dev
+
+esphome:
+  name: esphome-ot
+
+external_components:
+  - source: ../components
+  # - source: github://alextrical/ESPHome-Vent-Axia-Sentinel-Kinetic@v250601 
+  #   components: [ vent_axia_sentinel_kinetic ]
+  #   refresh: always
+
+logger:
+  hardware_uart : UART0
+  level: DEBUG
+
+sensor:
+  - platform: empty_uart_sensor
+    name: Empty UART sensor
+
+uart:
+  tx_pin: 18
+  rx_pin: 19
+  baud_rate: 9600

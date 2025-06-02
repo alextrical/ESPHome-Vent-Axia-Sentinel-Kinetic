@@ -1,16 +1,10 @@
 #include "esphome/core/log.h"
-
 #include "vent_axia_sentinel_kinetic.h"
-#if defined(ESP32) || defined(USE_ESP_IDF)
-#include "driver/timer.h"
-#include "esp_err.h"
-#endif
-#ifdef ESP8266
-#include "Arduino.h"
-#endif
 
 #define highbyte(val)(uint8_t)((val) >> 8)
 #define lowbyte(val)(uint8_t)((val) & 0xff)
+
+hw_timer_t * timer = nullptr;
 
 namespace esphome {
   namespace vent_axia_sentinel_kinetic {
@@ -18,22 +12,30 @@ namespace esphome {
     static
     const char * TAG = "vent_axia_sentinel_kinetic.component";
 
-    #ifdef ESP8266
-    vent_axia_sentinel_kinetic *vent_axia_sentinel_kinetic::instance = nullptr;
-    #endif
+    VentAxiaSentinelKineticComponent* VentAxiaSentinelKineticComponent::instance = nullptr;
+
+    void IRAM_ATTR VentAxiaSentinelKineticComponent::timer_isr_wrapper() {
+      if (VentAxiaSentinelKineticComponent::instance) {
+        VentAxiaSentinelKineticComponent::instance->timer_isr();
+      }
+    }
+
+    void IRAM_ATTR VentAxiaSentinelKineticComponent::timer_isr() {
+      // Your ISR logic here
+        digitalWrite(2,!(digitalRead(2)));  //Toggle LED Pin
+    }
 
     void VentAxiaSentinelKineticComponent::setup() {
       ESP_LOGCONFIG(TAG, "Setting up VentAxiaSentinelKinetic...");
+      instance = this;
+      timer = timerBegin(1, 80, true);
+      timerAttachInterrupt(timer, &timer_isr_wrapper, true);
+      timerAlarmWrite(timer, 26000, true);  // 1 second interval
+      timerAlarmEnable(timer);
+      
+      pinMode(2, OUTPUT);
+      digitalWrite(2, LOW);
       this -> send_alive_str_();
-    #ifdef ESP8266
-      VentAxiaSentinelKineticComponent::instance = this;
-    #endif
-
-    #if defined(ESP32) || defined(USE_ESP_IDF)
-      return this->init_esp32_timer_();
-    #else
-      return true;
-    #endif
       ESP_LOGCONFIG(TAG, "VentAxiaSentinelKinetic setup complete.");
     }
 
