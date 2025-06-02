@@ -73,11 +73,6 @@ namespace opentherm {
 // OPENTHERM_MESSAGE_WRITE_ENTITY or OPENTHERM_MESSAGE_RESPONSE_ENTITY. OPENTHERM_IGNORE is used for sensor read
 // requests since no data needs to be sent or processed, just the data id.
 
-// In order for things not to break, we define empty lists here in case some platforms are not used in config.
-#ifndef OPENTHERM_SETTING_MESSAGE_HANDLERS
-#define OPENTHERM_SETTING_MESSAGE_HANDLERS(MESSAGE, ENTITY, entity_sep, postscript, msg_sep)
-#endif
-
 // Write data request builders
 #define OPENTHERM_MESSAGE_WRITE_MESSAGE(msg) \
   case MessageId::msg: { \

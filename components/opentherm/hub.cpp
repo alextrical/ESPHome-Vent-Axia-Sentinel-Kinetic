@@ -87,17 +87,6 @@ OpenthermData OpenthermHub::build_request_(MessageId request_id) const {
     return data;
   }
 
-  // Next, we start with write requests from switches and other inputs,
-  // because we would want to write that data if it is available, rather than
-  // request a read for that type (in the case that both read and write are
-  // supported).
-  switch (request_id) {
-    OPENTHERM_SETTING_MESSAGE_HANDLERS(OPENTHERM_MESSAGE_WRITE_MESSAGE, OPENTHERM_MESSAGE_WRITE_SETTING, ,
-                                       OPENTHERM_MESSAGE_WRITE_POSTSCRIPT, )
-    default:
-      break;
-  }
-
   // And if we get here, a message was requested which somehow wasn't handled.
   // This shouldn't happen due to the way the defines are configured, so we
   // log an error and just return a 0 message.
