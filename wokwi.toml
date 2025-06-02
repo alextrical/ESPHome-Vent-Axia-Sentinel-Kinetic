@@ -1,4 +1,4 @@
 [wokwi]
 version = 1
-firmware = 'config/.esphome/build/esphome-vask/.pioenvs/esphome-vask/firmware.factory.bin'
-elf = 'config/.pioenvs/esphome-vask/firmware.elf'
+firmware = 'config/.esphome/build/esphome-ot/.pioenvs/esphome-ot/firmware.factory.bin'
+elf = 'config/.pioenvs/esphome-ot/firmware.elf'

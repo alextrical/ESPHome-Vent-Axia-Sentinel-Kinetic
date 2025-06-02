@@ -1,6 +1,13 @@
 #include "esphome/core/log.h"
 
 #include "vent_axia_sentinel_kinetic.h"
+#if defined(ESP32) || defined(USE_ESP_IDF)
+#include "driver/timer.h"
+#include "esp_err.h"
+#endif
+#ifdef ESP8266
+#include "Arduino.h"
+#endif
 
 #define highbyte(val)(uint8_t)((val) >> 8)
 #define lowbyte(val)(uint8_t)((val) & 0xff)
@@ -11,9 +18,22 @@ namespace esphome {
     static
     const char * TAG = "vent_axia_sentinel_kinetic.component";
 
+    #ifdef ESP8266
+    vent_axia_sentinel_kinetic *vent_axia_sentinel_kinetic::instance = nullptr;
+    #endif
+
     void VentAxiaSentinelKineticComponent::setup() {
       ESP_LOGCONFIG(TAG, "Setting up VentAxiaSentinelKinetic...");
       this -> send_alive_str_();
+    #ifdef ESP8266
+      VentAxiaSentinelKineticComponent::instance = this;
+    #endif
+
+    #if defined(ESP32) || defined(USE_ESP_IDF)
+      return this->init_esp32_timer_();
+    #else
+      return true;
+    #endif
       ESP_LOGCONFIG(TAG, "VentAxiaSentinelKinetic setup complete.");
     }
 

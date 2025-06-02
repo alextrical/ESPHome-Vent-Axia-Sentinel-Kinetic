@@ -1,0 +1,30 @@
+esp8266:
+  board: d1_mini
+  framework:
+    version: recommended
+
+esphome:
+  name: esphome-ot
+
+external_components:
+  - source: ../components
+  # - source: github://alextrical/ESPHome-Vent-Axia-Sentinel-Kinetic@v250601 
+  #   components: [ vent_axia_sentinel_kinetic ]
+  #   refresh: always
+
+logger:
+  hardware_uart : UART0
+  level: DEBUG
+
+# An extremely minimal configuration which only enables you to set the boiler's
+# water temperature setpoint as a number.
+
+opentherm:
+  in_pin: GPIO12
+  out_pin: GPIO13
+  ch_enable: true
+
+number:
+  - platform: opentherm
+    t_set:
+      name: "Boiler Control setpoint"
