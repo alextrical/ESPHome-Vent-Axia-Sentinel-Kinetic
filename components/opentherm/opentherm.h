@@ -347,7 +347,6 @@ class OpenTherm {
   void start_write_timer_();  // writing timer_ to send manchester code (at 2kHz)
   bool check_parity_(uint32_t val);
 
-  ProtocolErrorType verify_stop_bit_(uint8_t value);
   void write_bit_(uint8_t high, uint8_t clock);
 
 #ifdef ESP8266

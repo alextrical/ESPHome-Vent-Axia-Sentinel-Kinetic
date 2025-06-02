@@ -121,14 +121,6 @@ bool IRAM_ATTR OpenTherm::timer_isr(OpenTherm *arg) {
 void IRAM_ATTR OpenTherm::esp8266_timer_isr() { OpenTherm::timer_isr(OpenTherm::instance); }
 #endif
 
-ProtocolErrorType IRAM_ATTR OpenTherm::verify_stop_bit_(uint8_t value) {
-  if (value) {  // stop bit detected
-    return check_parity_(this->data_) ? ProtocolErrorType::NO_ERROR : ProtocolErrorType::PARITY_ERROR;
-  } else {  // no stop bit detected, error
-    return ProtocolErrorType::INVALID_STOP_BIT;
-  }
-}
-
 void IRAM_ATTR OpenTherm::write_bit_(uint8_t high, uint8_t clock) {
   if (clock == 1) {                           // left part of manchester encoding
     this->isr_out_pin_.digital_write(!high);  // low means logical 1 to protocol
