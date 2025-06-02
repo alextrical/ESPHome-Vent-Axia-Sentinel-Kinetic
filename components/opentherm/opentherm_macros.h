@@ -80,9 +80,6 @@ namespace opentherm {
 #ifndef OPENTHERM_BINARY_SENSOR_MESSAGE_HANDLERS
 #define OPENTHERM_BINARY_SENSOR_MESSAGE_HANDLERS(MESSAGE, ENTITY, entity_sep, postscript, msg_sep)
 #endif
-#ifndef OPENTHERM_SWITCH_MESSAGE_HANDLERS
-#define OPENTHERM_SWITCH_MESSAGE_HANDLERS(MESSAGE, ENTITY, entity_sep, postscript, msg_sep)
-#endif
 #ifndef OPENTHERM_NUMBER_MESSAGE_HANDLERS
 #define OPENTHERM_NUMBER_MESSAGE_HANDLERS(MESSAGE, ENTITY, entity_sep, postscript, msg_sep)
 #endif
