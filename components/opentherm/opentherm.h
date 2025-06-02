@@ -247,15 +247,6 @@ class OpenTherm {
   bool has_message() { return mode_ == OperationMode::RECEIVED; }
 
   /**
-   * Use this to retrive data packed captured by listen() function. Data packet is ready when has_message() function
-   * returns true. This function can be called multiple times until stop() is called.
-   *
-   * @param data reference to data structure to which fill the data packet data.
-   * @return true if packet was ready and was filled into data structure passed, false otherwise.
-   */
-  bool get_message(OpenthermData &data);
-
-  /**
    * Immediately send out Opentherm data packet to line connected on given pin.
    * Completed data transfer is indicated by is_sent() function.
    * Error state is indicated by is_error() function.

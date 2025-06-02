@@ -225,10 +225,6 @@ void OpenthermHub::loop() {
 
 bool OpenthermHub::handle_error_(OperationMode mode) {
   switch (mode) {
-    case OperationMode::ERROR_PROTOCOL:
-      // Protocol error can happen only while reading boiler response.
-      this->handle_protocol_error_();
-      return true;
     case OperationMode::ERROR_TIMEOUT:
       // Timeout error might happen while we wait for device to respond.
       this->handle_timeout_error_();
@@ -346,11 +342,6 @@ void OpenthermHub::start_conversation_() {
 
 void OpenthermHub::read_response_() {
   OpenthermData response;
-  if (!this->opentherm_->get_message(response)) {
-    ESP_LOGW(TAG, "Couldn't get the response, but flags indicated success. This is a bug.");
-    this->stop_opentherm_();
-    return;
-  }
 
   this->stop_opentherm_();
 
@@ -363,15 +354,6 @@ void OpenthermHub::read_response_() {
 void OpenthermHub::stop_opentherm_() {
   this->opentherm_->stop();
   this->last_conversation_end_ = millis();
-}
-
-void OpenthermHub::handle_protocol_error_() {
-  OpenThermError error;
-  this->opentherm_->get_protocol_error(error);
-  ESP_LOGW(TAG, "Protocol error occured while receiving response: %s",
-           this->opentherm_->protocol_error_to_str(error.error_type));
-  this->opentherm_->debug_error(error);
-  this->stop_opentherm_();
 }
 
 void OpenthermHub::handle_timeout_error_() {

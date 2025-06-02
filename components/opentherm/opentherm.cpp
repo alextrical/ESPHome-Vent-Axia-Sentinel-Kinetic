@@ -81,31 +81,6 @@ void OpenTherm::send(OpenthermData &data) {
   this->start_write_timer_();
 }
 
-bool OpenTherm::get_message(OpenthermData &data) {
-  if (this->mode_ == OperationMode::RECEIVED) {
-    data.type = (this->data_ >> 28) & 0x7;
-    data.id = (this->data_ >> 16) & 0xFF;
-    data.valueHB = (this->data_ >> 8) & 0xFF;
-    data.valueLB = this->data_ & 0xFF;
-    return true;
-  }
-  return false;
-}
-
-bool OpenTherm::get_protocol_error(OpenThermError &error) {
-  if (this->mode_ != OperationMode::ERROR_PROTOCOL) {
-    return false;
-  }
-
-  error.error_type = this->error_type_;
-  error.bit_pos = this->bit_pos_;
-  error.capture = this->capture_;
-  error.clock = this->clock_;
-  error.data = this->data_;
-
-  return true;
-}
-
 void OpenTherm::stop() {
   this->stop_timer_();
   this->mode_ = OperationMode::IDLE;
