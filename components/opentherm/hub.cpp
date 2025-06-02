@@ -92,8 +92,6 @@ OpenthermData OpenthermHub::build_request_(MessageId request_id) const {
   // request a read for that type (in the case that both read and write are
   // supported).
   switch (request_id) {
-    OPENTHERM_OUTPUT_MESSAGE_HANDLERS(OPENTHERM_MESSAGE_WRITE_MESSAGE, OPENTHERM_MESSAGE_WRITE_ENTITY, ,
-                                      OPENTHERM_MESSAGE_WRITE_POSTSCRIPT, )
     OPENTHERM_SETTING_MESSAGE_HANDLERS(OPENTHERM_MESSAGE_WRITE_MESSAGE, OPENTHERM_MESSAGE_WRITE_SETTING, ,
                                        OPENTHERM_MESSAGE_WRITE_POSTSCRIPT, )
     default:
