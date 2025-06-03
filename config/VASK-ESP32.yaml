@@ -23,10 +23,10 @@ esphome:
 # captive_portal:
 
 external_components:
-  - source: ../components
-  # - source: github://alextrical/ESPHome-Vent-Axia-Sentinel-Kinetic@v250602
-  #   components: [ vent_axia_sentinel_kinetic ]
-  #   refresh: always
+  # - source: ../components
+  - source: github://alextrical/ESPHome-Vent-Axia-Sentinel-Kinetic/@latest
+    components: [ vent_axia_sentinel_kinetic ]
+    refresh: always
 
 logger:
   hardware_uart : UART0

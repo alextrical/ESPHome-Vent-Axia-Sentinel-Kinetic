@@ -27,10 +27,10 @@ wifi:
 captive_portal:
 
 external_components:
-  - source: ../components
-  # - source: github://alextrical/ESPHome-Vent-Axia-Sentinel-Kinetic@v250602
-  #   components: [ vent_axia_sentinel_kinetic ]
-  #   refresh: always
+  # - source: ../components
+  - source: github://alextrical/ESPHome-Vent-Axia-Sentinel-Kinetic/@latest
+    components: [ vent_axia_sentinel_kinetic ]
+    refresh: always
 
 logger:
   level: DEBUG
@@ -87,9 +87,6 @@ binary_sensor:
       - delayed_off: 10ms
     on_press:
       - switch.turn_on: sw_down
-      # - binary_sensor.template.publish:
-      #     id: backlight
-      #     state: ON
     on_release:
       - switch.turn_off: sw_down
   - platform: gpio
@@ -106,9 +103,6 @@ binary_sensor:
       - delayed_off: 10ms
     on_press:
       - switch.turn_on: sw_set
-      # - binary_sensor.template.publish:
-      #     id: backlight
-      #     state: ON
     on_release:
       - switch.turn_off: sw_set
   - platform: gpio
@@ -125,9 +119,6 @@ binary_sensor:
       - delayed_off: 10ms
     on_press:
       - switch.turn_on: sw_main
-      # - binary_sensor.template.publish:
-      #     id: backlight
-      #     state: ON
     on_release:
       - switch.turn_off: sw_main
 
