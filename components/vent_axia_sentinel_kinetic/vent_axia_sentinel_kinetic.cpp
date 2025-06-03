@@ -50,6 +50,47 @@ namespace esphome {
     }
 
     void VentAxiaSentinelKineticComponent::loop() {
+      int32_t now = millis();
+      if (this->get_diagnostic) {
+        if (!this->diagnostic_time_set) {
+          this->diagnostic_time = now;
+          this->diagnostic_time_set = true;
+          ESP_LOGCONFIG(TAG, "get_diagnostic");
+        }
+        if (now - this->diagnostic_time <= 5000){
+            this->set_down(false);
+            this->set_up(true);
+            this->set_set(false);
+            this->set_main(true);
+        }else if (now - this->diagnostic_time <= 7500){
+            this->set_down(true);
+            this->set_up(false);
+            this->set_set(false);
+            this->set_main(false);
+        }else if (now - this->diagnostic_time <= 10000){
+            this->set_down(false);
+            this->set_up(true);
+            this->set_set(false);
+            this->set_main(false);
+        }else if (now - this->diagnostic_time <= 10100){
+            this->set_down(false);
+            this->set_up(false);
+            this->set_set(false);
+            this->set_main(false);
+        }else if (now - this->diagnostic_time <= 13500){
+            this->set_down(false);
+            this->set_up(true);
+            this->set_set(false);
+            this->set_main(false);
+        } else {
+          this->set_down(false);
+          this->set_up(false);
+          this->set_set(false);
+          this->set_main(false);
+          this->get_diagnostic = false;
+          this->diagnostic_time_set = false;
+        }
+      }
       //Send serial packets
       if (CMD_KEY_DATA != 0) {
         if (CMD_KEY_DATA != LAST_CMD_KEY_DATA_) {
@@ -63,7 +104,6 @@ namespace esphome {
         timer1_enable(TIM_DIV16, TIM_EDGE, TIM_LOOP);
       #endif
         // // //Send serial packets
-        // int32_t now = millis();
         // if (now - last_periodic_millis_ >= 20) { //we need every 26ms, but setting less can allow for more jitter
         //   last_periodic_millis_ = now;
         //   send_command_();
@@ -328,6 +368,14 @@ namespace esphome {
         }
       }
     }
+
+void DiagnosticButton::dump_config() {
+  LOG_BUTTON("", "Diagnostic Button", this);
+}
+
+void DiagnosticButton::press_action() {
+  this->parent_ -> get_diagnostic = true;
+}
 
   } // namespace vent_axia_sentinel_kinetic
 } // namespace esphome

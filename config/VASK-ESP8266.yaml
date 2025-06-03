@@ -65,7 +65,7 @@ binary_sensor:
         input: true
         pullup: true
       inverted: true
-    name: "Up"
+    id: upsw
     entity_category: "diagnostic"
     on_press:
       then:
@@ -80,7 +80,7 @@ binary_sensor:
         input: true
         pullup: true
       inverted: true
-    name: "Down"
+    id: downsw
     entity_category: "diagnostic"
     filters:
       - delayed_on: 10ms
@@ -96,7 +96,7 @@ binary_sensor:
         input: true
         pullup: true
       inverted: true
-    name: "Set"
+    id: setsw
     entity_category: "diagnostic"
     filters:
       - delayed_on: 10ms
@@ -112,7 +112,7 @@ binary_sensor:
         input: true
         pullup: true
       inverted: true
-    name: "Main"
+    id: mainsw
     entity_category: "diagnostic"
     filters:
       - delayed_on: 10ms
@@ -140,6 +140,9 @@ switch:
 vent_axia_sentinel_kinetic:
   - id: vask
     uart_id: vask_uart
+    diagnostic_button:
+      id: diagnostic_button
+      name: "Fetch Diagnostic"
     line1:
       id: line1
       name: "Line 1"

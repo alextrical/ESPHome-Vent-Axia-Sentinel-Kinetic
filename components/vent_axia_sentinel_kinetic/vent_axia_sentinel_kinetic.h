@@ -3,6 +3,7 @@
 #include "esphome/core/component.h"
 #include "esphome/components/uart/uart.h"
 #include "esphome/components/text_sensor/text_sensor.h"
+#include "esphome/components/button/button.h"
 
 #ifdef USE_SWITCH
 #include "esphome/components/switch/switch.h"
@@ -51,6 +52,9 @@ namespace esphome {
         void set_down(bool enable);
         void set_set(bool enable);
         void set_main(bool enable);
+        bool get_diagnostic = false;
+        bool diagnostic_time_set = false;
+        int32_t diagnostic_time;
 
         void set_line1(text_sensor::TextSensor * text_sensor) {line1_ = text_sensor;}
         void set_line2(text_sensor::TextSensor * text_sensor) {line2_ = text_sensor;}
@@ -137,6 +141,15 @@ namespace esphome {
         hw_timer_t *timer = nullptr;
 #endif
     };
+
+class DiagnosticButton: public Component, public button::Button {
+ public:
+  void dump_config() override;
+  void set_parent(VentAxiaSentinelKineticComponent *parent) { this->parent_ = parent; }
+ protected:
+  void press_action() override;
+  VentAxiaSentinelKineticComponent *parent_;
+};
 
   } // namespace vent_axia_sentinel_kinetic
 } // namespace esphome
