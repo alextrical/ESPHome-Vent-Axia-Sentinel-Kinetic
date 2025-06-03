@@ -42,7 +42,8 @@ namespace esphome {
       timer1_disable();
       
       // 5,000,000 ticks @ 5MHz (TIM_DIV16) = 1 second interval
-      timer1_write(5*26000);
+      // timer1_write(5*26000);
+      timer1_write(5*28000);
     #endif
       this -> send_alive_str_();
       ESP_LOGCONFIG(TAG, "VentAxiaSentinelKinetic setup complete.");
@@ -79,7 +80,7 @@ namespace esphome {
       }
 
       //Recieve Serial packets
-      if (this -> available() != 0) {
+      while (this -> available() != 0) {
         uint8_t c;
         this -> read_byte( & c);
 
@@ -97,6 +98,7 @@ namespace esphome {
           current_index_ = 0;
         }
       }
+
     }
 
     void VentAxiaSentinelKineticComponent::dump_config() {

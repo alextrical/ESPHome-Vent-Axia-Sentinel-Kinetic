@@ -1,26 +1,30 @@
-esp32:
-  board: esp32dev
-
 esphome:
   name: esphome-vask
+  min_version: 2024.11.0
+  name_add_mac_suffix: false
+  platformio_options:
+    board_build.f_cpu: 160000000L #increase clock speed
 
-# api:
-#   encryption:
-#     key: !secret api_encryption_key
+esp8266:
+  board: d1_mini  # Adjust to your specific ESP8266 board
 
-# ota:
-#   - platform: esphome
-#     password: !secret ota_pass
+api:
+  encryption:
+    key: !secret api_encryption_key
 
-# wifi:
-#   ssid: !secret wifi_ssid
-#   password: !secret wifi_password
+ota:
+  - platform: esphome
+    password: !secret ota_pass
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
   
-#   ap:
-#     ssid: "Ventaxia Fallback"
-#     password: !secret fallback_password
+  ap:
+    ssid: "Ventaxia Fallback"
+    password: !secret fallback_password
 
-# captive_portal:
+captive_portal:
 
 external_components:
   - source: ../components
@@ -29,14 +33,29 @@ external_components:
   #   refresh: always
 
 logger:
-  hardware_uart : UART0
   level: DEBUG
+  baud_rate: 0
 
 uart:
-  tx_pin: 17
-  rx_pin: 16
+  tx_pin: GPIO1
+  rx_pin: GPIO3
   baud_rate: 9600
   id: vask_uart
+
+i2c:
+  sda: 4
+  scl: 5
+  scan: false
+  
+display:
+  - platform: lcd_pcf8574
+    id: lcd
+    dimensions: 16x2
+    address: 0x27
+    update_interval: 300ms
+    lambda: |-
+        it.printf(0, 0, "%s", id(line1).state.c_str());
+        it.printf(0, 1, "%s", id(line2).state.c_str());
 
 binary_sensor:
   - platform: gpio
@@ -47,12 +66,70 @@ binary_sensor:
         pullup: true
       inverted: true
     name: "Up"
+    entity_category: "diagnostic"
     on_press:
       then:
         - switch.turn_on: sw_up
     on_release:
       then:
         - switch.turn_off: sw_up
+  - platform: gpio
+    pin:
+      number: 12
+      mode:
+        input: true
+        pullup: true
+      inverted: true
+    name: "Down"
+    entity_category: "diagnostic"
+    filters:
+      - delayed_on: 10ms
+      - delayed_off: 10ms
+    on_press:
+      - switch.turn_on: sw_down
+      # - binary_sensor.template.publish:
+      #     id: backlight
+      #     state: ON
+    on_release:
+      - switch.turn_off: sw_down
+  - platform: gpio
+    pin:
+      number: 14
+      mode:
+        input: true
+        pullup: true
+      inverted: true
+    name: "Set"
+    entity_category: "diagnostic"
+    filters:
+      - delayed_on: 10ms
+      - delayed_off: 10ms
+    on_press:
+      - switch.turn_on: sw_set
+      # - binary_sensor.template.publish:
+      #     id: backlight
+      #     state: ON
+    on_release:
+      - switch.turn_off: sw_set
+  - platform: gpio
+    pin:
+      number: 13
+      mode:
+        input: true
+        pullup: true
+      inverted: true
+    name: "Main"
+    entity_category: "diagnostic"
+    filters:
+      - delayed_on: 10ms
+      - delayed_off: 10ms
+    on_press:
+      - switch.turn_on: sw_main
+      # - binary_sensor.template.publish:
+      #     id: backlight
+      #     state: ON
+    on_release:
+      - switch.turn_off: sw_main
 
 switch:
   - platform: vent_axia_sentinel_kinetic
