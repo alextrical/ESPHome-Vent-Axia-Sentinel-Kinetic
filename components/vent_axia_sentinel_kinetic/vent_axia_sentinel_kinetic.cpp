@@ -61,7 +61,7 @@ namespace esphome {
           if (id(line1_).state.rfind("Diagnostic", 0) != 0 && !got_diagnostic_){ //We arent in the Diagnostic Menu, Hold Up and Main until we are
             if (CMD_KEY_DATA != 0x0A) CMD_KEY_DATA = 0x0A; //Up+Main
           } else if (!this->got_diagnostic_){ //Scroll down and Fetch all Diagnostic data
-            if (now - this->toggle_time_ > 100) {
+            if (now - this->toggle_time_ > 50) {
               if (CMD_KEY_DATA != 0x00){ //toggle
                 CMD_KEY_DATA = 0x01; //Down
               } else {
