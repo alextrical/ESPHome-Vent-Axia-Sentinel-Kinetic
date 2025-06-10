@@ -125,6 +125,7 @@ namespace esphome {
         text_sensor::TextSensor * diagnostic28_ {nullptr};
         void calculate_command_(const uint8_t * command_value, uint8_t command_str);
         void send_alive_str_();
+        void publishDiagnosticIfValid(text_sensor::TextSensor* diag, const std::string& buff);
 
         void send_command_();
         int32_t last_periodic_millis_ = millis();
