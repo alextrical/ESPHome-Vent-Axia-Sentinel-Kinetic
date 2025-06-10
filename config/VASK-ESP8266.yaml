@@ -27,10 +27,10 @@ wifi:
 captive_portal:
 
 external_components:
-  # - source: ../components
-  - source: github://alextrical/ESPHome-Vent-Axia-Sentinel-Kinetic/@latest
-    components: [ vent_axia_sentinel_kinetic ]
-    refresh: always
+  - source: ../components
+  # - source: github://alextrical/ESPHome-Vent-Axia-Sentinel-Kinetic/@latest
+  #   components: [ vent_axia_sentinel_kinetic ]
+  #   refresh: always
 
 logger:
   level: DEBUG
@@ -137,6 +137,32 @@ switch:
       name: "Main Switch"
       id: sw_main
 
+button:
+  - platform: template
+    name: "Up"
+    on_press:
+      - switch.turn_on: sw_up
+      - delay: 50ms
+      - switch.turn_off: sw_up
+  - platform: template
+    name: "Down"
+    on_press:
+      - switch.turn_on: sw_down
+      - delay: 50ms
+      - switch.turn_off: sw_down
+  - platform: template
+    name: "Set"
+    on_press:
+      - switch.turn_on: sw_set
+      - delay: 50ms
+      - switch.turn_off: sw_set
+  - platform: template
+    name: "Main"
+    on_press:
+      - switch.turn_on: sw_main
+      - delay: 50ms
+      - switch.turn_off: sw_main
+
 vent_axia_sentinel_kinetic:
   - id: vask
     uart_id: vask_uart
@@ -150,34 +176,34 @@ vent_axia_sentinel_kinetic:
       id: line2
       name: "Line 2"
     diagnostic0:
-      name: "Diagnostic 0"
+      name: "Diagnostic 00"
       entity_category: "diagnostic"
     diagnostic1:
-      name: "Diagnostic 1"
+      name: "Diagnostic 01"
       entity_category: "diagnostic"
     diagnostic2:
-      name: "Diagnostic 2"
+      name: "Diagnostic 02"
       entity_category: "diagnostic"
     diagnostic3:
-      name: "Diagnostic 3"
+      name: "Diagnostic 03"
       entity_category: "diagnostic"
     diagnostic4:
-      name: "Diagnostic 4"
+      name: "Diagnostic 04"
       entity_category: "diagnostic"
     diagnostic5:
-      name: "Diagnostic 5"
+      name: "Diagnostic 05"
       entity_category: "diagnostic"
     diagnostic6:
-      name: "Diagnostic 6"
+      name: "Diagnostic 06"
       entity_category: "diagnostic"
     diagnostic7:
-      name: "Diagnostic 7"
+      name: "Diagnostic 07"
       entity_category: "diagnostic"
     diagnostic8:
-      name: "Diagnostic 8"
+      name: "Diagnostic 08"
       entity_category: "diagnostic"
     diagnostic9:
-      name: "Diagnostic 9"
+      name: "Diagnostic 09"
       entity_category: "diagnostic"
     diagnostic10:
       name: "Diagnostic 10"
