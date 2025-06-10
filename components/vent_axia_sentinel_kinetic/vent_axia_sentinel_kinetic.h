@@ -91,7 +91,7 @@ namespace esphome {
         uint8_t buffer[41];
         bool packet_ready = false;
 
-      private:
+      protected:
         text_sensor::TextSensor * line1_ {nullptr};
         text_sensor::TextSensor * line2_ {nullptr};
         text_sensor::TextSensor * diagnostic0_ {nullptr};
@@ -133,6 +133,9 @@ namespace esphome {
         uint8_t current_index_ = 0;
         uint8_t cmdbuffer_[8];
         uint8_t LAST_CMD_KEY_DATA_ = 0x00;
+
+        int32_t toggle_time;
+        bool got_diagnostic = false;
 
         static VentAxiaSentinelKineticComponent* instance;
         void IRAM_ATTR timer_isr();

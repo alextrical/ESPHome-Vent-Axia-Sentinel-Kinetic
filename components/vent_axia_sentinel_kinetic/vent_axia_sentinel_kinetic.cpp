@@ -24,7 +24,6 @@ namespace esphome {
     }
 
     void VentAxiaSentinelKineticComponent::setup() {
-      ESP_LOGCONFIG(TAG, "Setting up VentAxiaSentinelKinetic...");
       //ESP32
       instance = this;
     #ifdef USE_ESP32
@@ -54,43 +53,44 @@ namespace esphome {
       if (this->get_diagnostic) {
         if (!this->diagnostic_time_set) {
           this->diagnostic_time = now;
+          this->toggle_time = now;
           this->diagnostic_time_set = true;
-          ESP_LOGCONFIG(TAG, "get_diagnostic");
+          this->got_diagnostic = false;
         }
-        if (now - this->diagnostic_time <= 5000){
-            this->set_down(false);
-            this->set_up(true);
-            this->set_set(false);
-            this->set_main(true);
-        }else if (now - this->diagnostic_time <= 7500){
-            this->set_down(true);
-            this->set_up(false);
-            this->set_set(false);
-            this->set_main(false);
-        }else if (now - this->diagnostic_time <= 10000){
-            this->set_down(false);
-            this->set_up(true);
-            this->set_set(false);
-            this->set_main(false);
-        }else if (now - this->diagnostic_time <= 10100){
-            this->set_down(false);
-            this->set_up(false);
-            this->set_set(false);
-            this->set_main(false);
-        }else if (now - this->diagnostic_time <= 13500){
-            this->set_down(false);
-            this->set_up(true);
-            this->set_set(false);
-            this->set_main(false);
-        } else {
-          this->set_down(false);
-          this->set_up(false);
-          this->set_set(false);
-          this->set_main(false);
-          this->get_diagnostic = false;
-          this->diagnostic_time_set = false;
+        if (now - this->diagnostic_time <= 60000){ //timeout incase we don't enter diagnostic
+          if (id(line1_).state.rfind("Diagnostic", 0) != 0 && !got_diagnostic){ //Hold Up and Main
+            if (CMD_KEY_DATA != 0x0A) CMD_KEY_DATA = 0x0A; //Up+Main
+          } else if (!this->got_diagnostic){
+            if (now - this->toggle_time > 100) {
+              if (CMD_KEY_DATA != 0x00){ //toggle
+                CMD_KEY_DATA = 0x01; //Down
+              } else {
+                CMD_KEY_DATA = 0x00; //Release all
+              }
+              this->toggle_time = now;
+            }
+            if (id(line1_).state.rfind("Diagnostic  28", 0) == 0) this->got_diagnostic = true;
+          } else if (id(line1_).state.rfind("Diagnostic", 0) == 0 && this->got_diagnostic){
+                if (now - this->toggle_time > 1000) {
+                  CMD_KEY_DATA = 0x00; //Release all
+                  this->toggle_time = now;
+                } else if (CMD_KEY_DATA != 0x02) {
+                  CMD_KEY_DATA = 0x02; //Up
+                }
+          } else {
+            if (CMD_KEY_DATA != 0x00) CMD_KEY_DATA = 0x00; //Release all
+            this->get_diagnostic = false;
+            this->diagnostic_time_set = false;
+            this->got_diagnostic = false;
+          }
+        } else if (this->get_diagnostic) {
+            if (CMD_KEY_DATA != 0x00) CMD_KEY_DATA = 0x00; //Release all
+            this->get_diagnostic = false;
+            this->diagnostic_time_set = false;
+            this->got_diagnostic = false;
         }
       }
+
       //Send serial packets
       if (CMD_KEY_DATA != 0) {
         if (CMD_KEY_DATA != LAST_CMD_KEY_DATA_) {
