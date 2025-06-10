@@ -52,9 +52,6 @@ namespace esphome {
         void set_down(bool enable);
         void set_set(bool enable);
         void set_main(bool enable);
-        bool get_diagnostic = false;
-        bool diagnostic_time_set = false;
-        int32_t diagnostic_time;
 
         void set_line1(text_sensor::TextSensor * text_sensor) {line1_ = text_sensor;}
         void set_line2(text_sensor::TextSensor * text_sensor) {line2_ = text_sensor;}
@@ -89,7 +86,8 @@ namespace esphome {
         void set_diagnostic28(text_sensor::TextSensor * text_sensor) {diagnostic28_ = text_sensor;}
 
         uint8_t buffer[41];
-        bool packet_ready = false;
+        uint8_t last_buffer[41];
+        bool get_diagnostic = false;
 
       protected:
         text_sensor::TextSensor * line1_ {nullptr};
@@ -134,9 +132,12 @@ namespace esphome {
         uint8_t current_index_ = 0;
         uint8_t cmdbuffer_[8];
         uint8_t LAST_CMD_KEY_DATA_ = 0x00;
+        // bool packet_ready_ = false;
 
-        int32_t toggle_time;
-        bool got_diagnostic = false;
+        int32_t toggle_time_;
+        bool diagnostic_time_set_ = false;
+        int32_t diagnostic_time_;
+        bool got_diagnostic_ = false;
 
         static VentAxiaSentinelKineticComponent* instance;
         void IRAM_ATTR timer_isr();
