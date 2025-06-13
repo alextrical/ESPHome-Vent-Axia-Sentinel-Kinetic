@@ -71,12 +71,18 @@ namespace esphome {
             }
             if (id(line1_).state.rfind("Diagnostic  28", 0) == 0) this->got_diagnostic_ = true; //We are at the bottom entry od the Diagnostic menu, we have seen everything
           } else if (id(line1_).state.rfind("Diagnostic", 0) == 0 && this->got_diagnostic_){ //We have all Diagnostic data we want, Now exit
-                if (now - this->toggle_time_ > 1000) {
-                  CMD_KEY_DATA = 0x00; //Release all
-                  this->toggle_time_ = now;
-                } else if (CMD_KEY_DATA != 0x02) {
-                  CMD_KEY_DATA = 0x02; //Up
-                }
+            if (id(line1_).state.rfind("Diagnostic  00", 0) == 0){ //We are at the Diagnostic 00 page, release Up button to reset MVHR timer
+              if (this->toggle_time_ <10) {
+                if (CMD_KEY_DATA != 0x00) CMD_KEY_DATA = 0x00; //Release for a bit the first time we see page 00
+                this->toggle_time_ ++;
+              } else { //We have waited, how just hold Up
+                if (CMD_KEY_DATA != 0x02) CMD_KEY_DATA = 0x02; //Up
+              }
+
+            } else { //We are not at Diadnostic 00 page, just hold up to scroll
+              if (CMD_KEY_DATA != 0x02) CMD_KEY_DATA = 0x02; //Up
+              this->toggle_time_ = 0;
+            }
           } else { //We have exitetd the diagnostic menu, release all keys 
             if (CMD_KEY_DATA != 0x00) CMD_KEY_DATA = 0x00; //Release all
             this->get_diagnostic = false;
@@ -84,10 +90,10 @@ namespace esphome {
             this->got_diagnostic_ = false;
           }
         } else if (this->get_diagnostic) { //We timed out, release all keys
-            if (CMD_KEY_DATA != 0x00) CMD_KEY_DATA = 0x00; //Release all
-            this->get_diagnostic = false;
-            this->diagnostic_time_set_ = false;
-            this->got_diagnostic_ = false;
+          if (CMD_KEY_DATA != 0x00) CMD_KEY_DATA = 0x00; //Release all
+          this->get_diagnostic = false;
+          this->diagnostic_time_set_ = false;
+          this->got_diagnostic_ = false;
         }
       }
 
