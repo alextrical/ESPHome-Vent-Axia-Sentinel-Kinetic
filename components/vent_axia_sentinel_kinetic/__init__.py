@@ -57,7 +57,7 @@ CONFIG_SCHEMA = (
     cv.Schema(
         {
             cv.GenerateID(): cv.declare_id(VentAxiaSentinelKineticComponent),
-            cv.Optional(CONF_DIAGNOSTIC_BUTTON): button.BUTTON_SCHEMA.extend({cv.GenerateID(): cv.declare_id(DiagnosticButton)}),
+            cv.Optional(CONF_DIAGNOSTIC_BUTTON): button.button_schema(DiagnosticButton),
             cv.Optional(CONF_LINE1): text_sensor.text_sensor_schema(
                 text_sensor.TextSensor
             ),
