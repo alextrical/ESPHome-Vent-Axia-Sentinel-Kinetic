@@ -1,4 +1,7 @@
 ## vent_axia_sentinel_kinetic
+
+**Requires ESPHome 2025.11.0 or newer** (uses `button_schema()`; `BUTTON_SCHEMA` was removed in 2025.11.0).
+
 ```
 external_components:
   - source: github://alextrical/ESPHome-Vent-Axia-Sentinel-Kinetic@latest
@@ -7,6 +10,7 @@ external_components:
 ```
 
 ## vent_axia_sentinel_kinetic.switch
+
 ```
 <!-- packet on) 0x02 0x01 0x02 0x03 0x01 (add)checksum 0x0D 0x0A
    offset) head head 0    1    2
@@ -29,10 +33,11 @@ switch:
       name: "Main Switch"
       id: sw_main
 ```
+
 <hr/>
 
-
 ## vent_axia_sentinel_kinetic.text_sensor
+
 ```
 vent_axia_sentinel_kinetic:
   - id: vask
@@ -108,4 +113,5 @@ vent_axia_sentinel_kinetic:
     diagnostic28:
       id: diagnostic28
 ```
+
 <hr/>
